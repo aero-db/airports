@@ -100,6 +100,13 @@ function toCsv(airports: Airport[]): string {
   return lines.join("\n");
 }
 
+function omitUpdatedAt(airports: Airport[]): Airport[] {
+  return airports.map((airport) => {
+    const { updatedAt, ...rest } = airport;
+    return rest;
+  });
+}
+
 async function fetchAllAirports(): Promise<Airport[]> {
   console.log(`Fetching airports in batches of ${limit} (max ${maxConcurrency} concurrent)...`);
 
@@ -153,7 +160,7 @@ async function fetchAllAirports(): Promise<Airport[]> {
 
 async function updateAirports() {
   try {
-    const airports = await fetchAllAirports();
+    const airports = omitUpdatedAt(await fetchAllAirports());
 
     const jsonPath = path.resolve(__dirname, "..", "airports.json");
     const csvPath = path.resolve(__dirname, "..", "airports.csv");
